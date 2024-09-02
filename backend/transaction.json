@@ -1,0 +1,86 @@
+{
+  "Header": {
+    "host": "0384-185-70-52-34.ngrok-free.app",
+    "user-agent": "Mozilla 5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.11)",
+    "content-length": "1569",
+    "accept": "*/*",
+    "callback-signature": "grmQI+lM6C0gRh4wwhA3tJnR4t974fY1D4PUFJDcZjIXIpDsaFWCS1wHm5u6JYrVmetjPRin+FgaIojIe0n/GUbTNMQJ/6OzRU1TFsGKOtxfa+ZgHWBkSyD+KxQX2fwa0ehMIoFLWZJ2vQCMadHdwXGLy0n7x0HB+2FUNOM2Pq3gx06fEjogaMCJ22/VtHauV2ROLWLs6HtpbyyMIhy60RnHPIi/5hYLHf8XRxcEF3l+rS8Y4xkLz8IlvKFPvbeE8CpDChPYZI/yKX/jOHj+iB0tJQ4k4/WkC8sj9xQE2a7zw0UytVmLMStxc/ohxfvywHV02BhcXagMQonStSNv1Q==",
+    "callback-validator": "h6bX193tv3QIxnCU30YO3OevGB1xSIJ+D1pEL6w/JZVMMP5L3w/UhHgqMPhK7l/8yMPQHpn9dSpw+QmjXxNDXk4MITBwiFXtkTYG13X0XLQXFn5Oyv9pPhwwX9nvI7hqLjvK/xo5VMQ72BAK7l86y29l1zvTEGvSVf0D58DkrI+ifGVo7wxb1yGqnA+eLUNG2oZ00DEZy8BDw+X0nmX+cebKlDn0I2G4gbaWisaReuZ5c0b5w1Ro0OCgEE8BNqey+eolqdf+NnbhNqS2bMm4XCjo11KTjVpT/SSouU3DyEmv2kJk92Zgdw4uVmzq9imJNHJ4AaZjCC+fRVQEJCaTjw==",
+    "content-language": "en-US",
+    "content-type": "application/json",
+    "traceparent": "00-56788b79da84af42d997f030964a8e47-3fddab9657a7007f-01",
+    "tracestate": "7c2fc6e9-327092f0@dt=fw4;1;f3b9319b;4f22b;0;0;0;1b9;5b28;2h02;3h9a7b34ec;4h051594;5h01;6h56788b79da84af42d997f030964a8e47;7h3fddab9657a7007f",
+    "x-dynatrace": "FW4;846238448;1;-205966949;324139;0;2083505897;441;5b28;2h02;3h9a7b34ec;4h051594;5h01;6h56788b79da84af42d997f030964a8e47;7h3fddab9657a7007f",
+    "x-forwarded-for": "91.209.131.193",
+    "x-forwarded-host": "0384-185-70-52-34.ngrok-free.app",
+    "x-forwarded-proto": "https",
+    "accept-encoding": "gzip"
+  },
+  "Body": {
+    "event": "order_payment",
+    "request_time": "2024-08-21T16:18:09.116694",
+    "zoned_request_time": "2024-08-21T12:18:09.116694Z",
+    "body": {
+      "order_id": "6f9dfd88-0c1f-493f-a8b9-0bb7ae1810cb",
+      "external_order_id": null,
+      "client": {
+        "id": "39155",
+        "brand_ka": "ბიზნეს მენეჯერი",
+        "brand_en": "Business Manager",
+        "url": "https://www.manager.bog.ge"
+      },
+      "create_date": "2024-08-21T16:17:19.118102",
+      "zoned_create_date": "2024-08-21T12:17:19.118102Z",
+      "expire_date": "2024-08-21T16:32:19.118102",
+      "zoned_expire_date": "2024-08-21T12:32:19.118102Z",
+      "order_status": { "key": "completed", "value": "წარმატებული" },
+      "buyer": null,
+      "redirect_links": {
+        "success": "http://locahost:3000/success",
+        "fail": "http://localhost:3000/fail"
+      },
+      "payment_detail": {
+        "transfer_method": { "key": "card", "value": "ბარათით გადახდა" },
+        "transaction_id": "423416530840",
+        "payer_identifier": "537493***6701",
+        "payment_option": "direct_debit",
+        "card_type": "mc",
+        "card_expiry_date": "09/26",
+        "request_account_tag": null,
+        "transfer_account_tag": null,
+        "saved_card_type": null,
+        "parent_order_id": null
+      },
+      "actions": null,
+      "disputes": null,
+      "split": null,
+      "discount": null,
+      "lang": "ka",
+      "reject_reason": null,
+      "industry": "ecommerce",
+      "capture": "automatic",
+      "purchase_units": {
+        "request_amount": "0.01",
+        "transfer_amount": "0.01",
+        "refund_amount": null,
+        "currency_code": "GEL",
+        "items": [
+          {
+            "external_item_id": "product123",
+            "unit_price": "0.01",
+            "description": null,
+            "quantity": "1",
+            "unit_discount_price": "0.0",
+            "package_code": null,
+            "total_price": null,
+            "vat": null,
+            "vat_percent": null,
+            "tin": null,
+            "pinfl": null,
+            "product_discount_id": null
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import AddItemPage from "../AddItemPage/AddItemPage";
+import AddFolder from "../AddFolder/AddFolder";
+
+type refetchType = {
+  refetch: () => Promise<void>;
+  isopen: boolean;
+};
+export default function FolderOverlay({ refetch, isopen }: refetchType) {
+  const [open, setOpen] = useState(false);
+  const [skip, setSkip] = useState(true);
+
+  useEffect(() => {
+    if (skip) {
+      setSkip(false);
+    } else {
+      setOpen(true);
+    }
+  }, [isopen]);
+
+  return (
+    <Dialog open={open} onClose={setOpen} className="relative z-10">
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+      />
+
+      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <DialogPanel
+            transition
+            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+          >
+            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div className="sm:flex sm:items-start">
+                <div className="mt-3 text-center w-full">
+                  <DialogTitle
+                    as="h3"
+                    className="text-xl font-bold text-center text-gray-900"
+                  >
+                    Add a Folder
+                  </DialogTitle>
+                </div>
+              </div>
+              <AddFolder setOpen={setOpen} refetch={refetch} />
+            </div>
+          </DialogPanel>
+        </div>
+      </div>
+    </Dialog>
+  );
+}
