@@ -5,7 +5,7 @@ const NavigationSidebar = () => {
   return (
     // may need height full
     <div className="w-[5.5rem] h-full bg-indigo-600">
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
         <div className="flex flex-row justify-center items-center">
           <Link
             to="/itemsPage"
@@ -110,7 +110,7 @@ const NavigationSidebar = () => {
             </svg>
           </Link>
         </div>
-        {/* <div className="flex flex-row justify-center items-center">
+        <div className="flex flex-row justify-center items-center">
           <Link
             to="/settings"
             className="h-[48px] w-[48px] hover:bg-indigo-500 mt-3 rounded-lg"
@@ -135,7 +135,7 @@ const NavigationSidebar = () => {
               />
             </svg>
           </Link>
-        </div> */}
+        </div>
       </div>
     </div>
   );

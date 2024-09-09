@@ -11,6 +11,7 @@ import NavigationSidebar from "../NavigationSidebar/NavigationSidebar";
 import { Autocomplete } from "@mui/material";
 import { DropdownSearch } from "../DropdownSearch/DropdownSearch";
 import AddItemOverlay from "../AddItemOverlay/AddItemOverlay";
+import TagDropdown from "../TagDropdown/TagDropdown";
 
 const ItemsPage = () => {
   const [addItemsOpen, setAddItemsOpen] = useState(false);
@@ -36,6 +37,7 @@ const ItemsPage = () => {
   const [quantityisopen, setQuantityisopen] = useState(false);
   const [variantsisopen, setVariantsisopen] = useState(false);
   const [totalPriceisopen, setTotalpriceisopen] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setName(value);
@@ -87,6 +89,12 @@ const ItemsPage = () => {
       setPage(newPage);
     }
   };
+  type tagType = {
+    _id: string;
+    email: string;
+    name: string;
+    color: string;
+  };
   type itemType = {
     _id: string;
     __v: number;
@@ -99,6 +107,7 @@ const ItemsPage = () => {
     image: { data: number[]; type: string };
     totalPrice: number;
     createdAt: string;
+    tags: tagType[];
   };
   const authAxios = axios.create({
     baseURL: baseURL,
@@ -436,6 +445,12 @@ const ItemsPage = () => {
                   <></>
                 )}
               </div>
+              <div className="">
+                <TagDropdown
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                />
+              </div>
               <div className="p-4">
                 <button
                   type="button"
@@ -485,6 +500,7 @@ const ItemsPage = () => {
                 image,
                 createdAt,
                 totalPrice,
+                tags,
               } = item;
               return (
                 <>
@@ -503,6 +519,7 @@ const ItemsPage = () => {
                     setLoading={setLoading}
                     createdAt={createdAt}
                     totalPrice={totalPrice}
+                    tags={tags}
                   />
                 </>
               );

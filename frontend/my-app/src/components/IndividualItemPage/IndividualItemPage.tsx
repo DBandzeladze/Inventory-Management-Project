@@ -15,6 +15,7 @@ import FolderOverlay from "../FolderOverlay/FolderOverlay";
 import PageLimitDropdown from "../PageLimitDropdown/PageLimitDropdown";
 import UpdateItemOverley from "../UpdateItemOverlay/UpdateItemOverlay";
 import { useLocation, useSearchParams } from "react-router-dom";
+import TagDropdown from "../TagDropdown/TagDropdown";
 
 const IndividualItemPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,6 +46,7 @@ const IndividualItemPage = () => {
   const [folderoverlay, setFolderoverlay] = useState(false);
   const [folderFilter, setFolderFilter] = useState("");
   const [img, setImg] = useState<string>();
+  const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -134,6 +136,13 @@ const IndividualItemPage = () => {
     image: { data: number[]; type: string };
     totalPrice: number;
     createdAt: string;
+    tags: tagType[];
+  };
+  type tagType = {
+    _id: string;
+    email: string;
+    name: string;
+    color: string;
   };
   const authAxios = axios.create({
     baseURL: baseURL,
@@ -543,6 +552,12 @@ const IndividualItemPage = () => {
                   <></>
                 )}
               </div>
+              <div className="">
+                <TagDropdown
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                />
+              </div>
               <div className="p-4">
                 <button
                   type="button"
@@ -692,6 +707,24 @@ const IndividualItemPage = () => {
                 </div>
                 <div className="p-6 bg-white rounded-lg w-6/12 ml-2">
                   <div className="text-3xl font-semibold">Custom Fields</div>
+                  <div className="flex flex-col">
+                    <div className="mt-2">
+                      <div className="">Item tags:</div>
+                      <div className="mt-1 flex flex-row">
+                        {item?.tags.map((tag) => {
+                          return (
+                            <div
+                              className="rounded-lg text-sm font-semibold p-1 mr-1"
+                              style={{ backgroundColor: tag.color }}
+                            >
+                              {tag.name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="mt-2">Custom comments</div>
+                  </div>
                 </div>
               </div>
             </div>

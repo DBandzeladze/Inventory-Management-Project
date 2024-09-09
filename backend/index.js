@@ -97,6 +97,27 @@ const userSchema = new mongoose.Schema({
     default: "free",
   },
 });
+const tagSchema = new mongoose.Schema({
+  email: String,
+  name: String,
+  color: String,
+});
+// const itemSchema = new mongoose.Schema(
+//   {
+//     name: String,
+//     quantity: Number,
+//     measurement: String,
+//     minQuantity: Number,
+//     price: Number,
+//     variants: Boolean,
+//     image: {
+//       type: Buffer,
+//     },
+//     userEmail: String,
+//     totalPrice: Number,
+//   },
+//   { timestamps: true }
+// );
 const itemSchema = new mongoose.Schema(
   {
     name: String,
@@ -110,23 +131,11 @@ const itemSchema = new mongoose.Schema(
     },
     userEmail: String,
     totalPrice: Number,
-  },
-  { timestamps: true }
-);
-const newitemSchema = new mongoose.Schema(
-  {
-    name: String,
-    quantity: Number,
-    measurement: String,
-    minQuantity: Number,
-    price: Number,
-    variants: Boolean,
-    image: {
-      type: Buffer,
-    },
-    userEmail: String,
-    totalPrice: Number,
     folder: {
+      type: Array,
+      default: [],
+    },
+    tags: {
       type: Array,
       default: [],
     },
@@ -169,6 +178,7 @@ const item = mongoose.model("item", itemSchema);
 const users = mongoose.model("user", userSchema);
 const history = mongoose.model("history", historyItemSchema);
 const folders = mongoose.model("folders", folderSchema);
+const tags = mongoose.model("tags", tagSchema);
 
 app.set("views", path.join(__dirname, "views"));
 
@@ -841,6 +851,7 @@ app
         variants: req.body.variants,
         userEmail: email,
         totalPrice: totalPrice,
+        tags: req.body.tags,
       });
 
       const id = await getUserId(req);
@@ -979,6 +990,19 @@ app
           items: updatedFolderItems,
         }
       );
+      const itemToUpdate = await item.findOne({ _id: req.body.id });
+      var array = itemToUpdate.folder;
+      console.log("this is the array", array);
+      if (!array.includes(result.name)) {
+        array.push(result.name);
+        const responseItemChange = await item.findOneAndUpdate(
+          {
+            _id: req.body.id,
+          },
+          { folder: array }
+        );
+      }
+
       console.log(newres);
       // const result = await item.findByIdAndUpdate({_id: req.params.id}, {
       //   folder:
@@ -1222,13 +1246,24 @@ app
       withNoVariants,
       withVariants,
       sortingOption,
+      folderFilter,
+      tagFilter,
+      lowFlag,
     } = req.body;
+    if (lowFlag) {
+      filtercriteria.lowFlag = {};
+    }
     if (name !== "") {
       filtercriteria.name = { $regex: name, $options: "i" };
     }
-    // if (folderFilter !== "") {
-    //   filtercriteria.folder = { $regex: folderFilter, $options: "i" };
-    // }
+    if (folderFilter && folderFilter !== "") {
+      filtercriteria.folder = { $regex: folderFilter, $options: "i" };
+    }
+    if (tagFilter && tagFilter.length > 0) {
+      console.log("tagFilter: ", tagFilter);
+      const tagIds = tagFilter.map((tag) => tag._id);
+      filtercriteria["tags._id"] = { $in: tagIds };
+    }
     if (minPrice !== "") {
       filtercriteria.price = { ...filtercriteria.price, $gte: minPrice };
     }
@@ -1269,7 +1304,13 @@ app
     }
     try {
       if (returnNothing) {
-        res.send([]);
+        console.log("nothing was sent");
+        res.json({
+          filteredItems: [],
+          totalItems: 0,
+          totalPages: 0,
+          currentPage: 1,
+        });
       } else {
         console.log(sortingOption);
         const filteredItems = await item
@@ -1351,9 +1392,9 @@ app
     const data = await item.find();
     console.log("👻");
     data.forEach((item) => {
-      console.log(item.name, ":", item.userEmail);
+      console.log(item.name, ":", item.userEmail, ":", item.tags);
     });
-    res.send("logged");
+    res.send(data);
   })
   .get("/-history", async (req, res) => {
     const data = await history.find();
@@ -1361,6 +1402,10 @@ app
   })
   .get("/-users", async (req, res) => {
     const data = await users.find();
+    res.send(data);
+  })
+  .get("/-tags", async (req, res) => {
+    const data = await tags.find();
     res.send(data);
   })
   .delete("/-deleteFolders", async (req, res) => {
@@ -1387,6 +1432,62 @@ app
       res.send(itemArray);
     } else {
       res.send("not found");
+    }
+  })
+  .post("/addTag", async (req, res) => {
+    try {
+      const recievedToken = JSON.parse(req.headers.authorization);
+      const decoded = await jwt.verify(
+        recievedToken.substring(7),
+        "TOP_SECRET"
+      );
+      const email = decoded.user.email;
+      const newTag = new tags({
+        email: email,
+        name: req.body.name,
+        color: req.body.color,
+      });
+      await newTag.save();
+      res.status(200).send("saved");
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .put("/updateItemTags/:id", async (req, res) => {
+    try {
+      console.log("called");
+      console.log(req.params.id);
+      console.log("reques body is here : ", req.body);
+      // const itemToUpdate = await item.find({_id: req.params.id})
+      // const updatedTags = itemToUpdate.tags
+      const response = await item.findOneAndUpdate(
+        { _id: req.params.id },
+        { tags: req.body.selectedTags }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .get("/getTags", async (req, res) => {
+    try {
+      const recievedToken = JSON.parse(req.headers.authorization);
+      const decoded = await jwt.verify(
+        recievedToken.substring(7),
+        "TOP_SECRET"
+      );
+      const email = decoded.user.email;
+      const foundTags = await tags.find({ email: email });
+      res.send(foundTags);
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .get("/getItemById/:id", async (req, res) => {
+    try {
+      const result = await item.findOne({ _id: req.params.id });
+      res.send(result);
+    } catch (err) {
+      console.log(err);
     }
   });
 

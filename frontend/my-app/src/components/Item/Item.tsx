@@ -7,6 +7,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import AddItemOverlay from "../AddItemOverlay/AddItemOverlay";
 import UpdateItemOverley from "../UpdateItemOverlay/UpdateItemOverlay";
 import { Link } from "react-router-dom";
+import TagsForItem from "../TagDropdown/TagsForItem";
 
 const authAxios = axios.create({
   baseURL: baseURL,
@@ -15,6 +16,12 @@ const authAxios = axios.create({
   },
 });
 
+type tagType = {
+  _id: string;
+  email: string;
+  name: string;
+  color: string;
+};
 type itemType = {
   id: string;
   name: string;
@@ -29,6 +36,7 @@ type itemType = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
   totalPrice: number;
+  tags: tagType[];
 };
 
 const Item = ({
@@ -45,11 +53,19 @@ const Item = ({
   setLoading,
   createdAt,
   totalPrice,
+  tags,
 }: itemType) => {
   const [deleted, setDeleted] = useState(false);
   const [update, setUpdate] = useState(false);
   const [img, setImg] = useState<string>();
   const [folders, setFolders] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
+  type tagType = {
+    _id: string;
+    email: string;
+    name: string;
+    color: string;
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -98,6 +114,19 @@ const Item = ({
     }
   }, []);
 
+  const updateTags = async () => {
+    console.log(selectedTags);
+    const authAxios = axios.create({
+      baseURL: baseURL,
+      headers: {
+        Authorization: `${localStorage.getItem("token")}`,
+      },
+    });
+    const result = await authAxios.put(`/updateItemTags/${id}`, {
+      selectedTags,
+    });
+  };
+
   return deleted ? (
     <></>
   ) : (
@@ -124,6 +153,13 @@ const Item = ({
           ) : (
             <></>
           )}
+          {/* {minQuantity >= quantity ? (
+            <div className="bg-green-600 text-white rounded-lg pl-1 w-[38px] absolute top-2 left-2">
+              new
+            </div>
+          ) : (
+            <></>
+          )} */}
           {img ? (
             <img
               className="w-full h-full object-cover object-center rounded-l-xl"
@@ -157,8 +193,17 @@ const Item = ({
           </div>
         </div>
         <div className="w-[434px] h-[136px] pl-5 pr-5 pt-2 pb-2  flex flex-col flex-start w-full">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between relative">
             <div className="font-sans text-sm">{formatDate(createdAt)}</div>
+            <div className="opacity-0 hover:opacity-100 transition-opacity duration-300">
+              <FolderDropDown
+                itemName={name}
+                itemId={id}
+                folders={folders}
+                getFolders={getFolders}
+              />
+            </div>
+
             <div className="flex justify-end">
               <Menu as="div" className="relative inline-block text-left mb-2">
                 <div>
@@ -225,9 +270,26 @@ const Item = ({
                         Update
                       </button>
                     </MenuItem>
+                    <MenuItem>
+                      <button
+                        className="block px-4 py-2 w-56 text-sm text-left text-gray-600 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                        onClick={() => {}}
+                      >
+                        Add a tag
+                      </button>
+                    </MenuItem>
                   </div>
                 </MenuItems>
               </Menu>
+            </div>
+            <div className="absolute top-[95px] right-0">
+              <TagsForItem
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+                updateTags={updateTags}
+                itemTags={tags}
+                itemId={id}
+              />
             </div>
           </div>
         </div>

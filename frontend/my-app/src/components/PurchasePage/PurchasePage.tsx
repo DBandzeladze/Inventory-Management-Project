@@ -2,7 +2,12 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import LogoutButton from "../LogoutButton/LogoutButton";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { baseURL, bogAuthorizationString, password, username } from "../../config";
+import {
+  baseURL,
+  bogAuthorizationString,
+  password,
+  username,
+} from "../../config";
 
 export default function PurchasePage() {
   const includedFeatures = [
@@ -18,35 +23,35 @@ export default function PurchasePage() {
       Authorization: `${localStorage.getItem("token")}`,
     },
   });
-  const bogAuthentication = async () =>{
+  const bogAuthentication = async () => {
     try {
-      console.log(bogAuthorizationString)
-      const response = await axios.post('https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token', {
-        grant_type: "client_credentials"
-
-      }, {
-      headers: {
-        Authorization: bogAuthorizationString,
-        "Content-Type":'application/x-www-form-urlencoded'
-      },
-    })
-    console.log(response)
-
-
-    } catch(err){
-      console.log(err)
-    } 
-    
-  }
-  const bogAuthentication2 = async () =>{
-    try {
-      const res = await authAxios.get('/bogAuthorize')
-      console.log(res.data)
-      return res.data.access_token
-    }catch(err){
-      console.log(err)
+      console.log(bogAuthorizationString);
+      const response = await axios.post(
+        "https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token",
+        {
+          grant_type: "client_credentials",
+        },
+        {
+          headers: {
+            Authorization: bogAuthorizationString,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      console.log(response);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
+  const bogAuthentication2 = async () => {
+    try {
+      const res = await authAxios.get("/bogAuthorize");
+      console.log(res.data);
+      return res.data.access_token;
+    } catch (err) {
+      console.log(err);
+    }
+  };
   // type paymentType = {
   //   id: string,
   //   _links: {
@@ -58,14 +63,19 @@ export default function PurchasePage() {
   //     }
   //   }
   // }
-  const bogPaymentTest = async ()=>{
-    const accessToken = await bogAuthentication2()
-    const res = await authAxios.post('/goToPayment', {
-      token: accessToken
-    }).then((response)=>window.location.href = response.data._links.redirect.href)
+  const bogPaymentTest = async () => {
+    const accessToken = await bogAuthentication2();
+    const res = await authAxios
+      .post("/goToPayment", {
+        token: accessToken,
+      })
+      .then(
+        (response) =>
+          (window.location.href = response.data._links.redirect.href)
+      );
     // console.log(res.data._links.redirect.href)
     // window.location.href = res.data._links.redirect.href
-  }
+  };
 
   return (
     <>
@@ -129,32 +139,36 @@ export default function PurchasePage() {
                       USD
                     </span>
                   </p>
-                  <button 
-                  onClick={async ()=>{
-                    const request = {items: [{id: 1, quantity: 1}]}
-                    const res = await authAxios.post('/create-checkout-session', request)
-                    console.log(res.data)
-                    // const res = await authAxios.get('/BuyPremiumService')
-                    // console.log(res.data)
-                  }}
+                  {/* <button
+                    onClick={async () => {
+                      const request = { items: [{ id: 1, quantity: 1 }] };
+                      const res = await authAxios.post(
+                        "/create-checkout-session",
+                        request
+                      );
+                      console.log(res.data);
+                      // const res = await authAxios.get('/BuyPremiumService')
+                      // console.log(res.data)
+                    }}
                     className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
-                    Purchase Premium Plan
-                  </button>
+                    Purchase Premium Plan for free
+                  </button> */}
                   {/* <Link to='/Checkout' className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Checkout</Link> */}
-                  <button
+                  {/* <button
                   onClick={()=>{
                     bogAuthentication2()
                   }}                     
                   className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                     check authntification
-                  </button>
+                  </button> */}
                   <button
-                  onClick={()=>{
-                    bogPaymentTest()
-                  }}                     
-                  className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    check payment
+                    onClick={() => {
+                      bogPaymentTest();
+                    }}
+                    className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    buy premium plan
                   </button>
                   <p className="mt-6 text-xs leading-5 text-gray-600">
                     Invoices and receipts available for easy company

@@ -16,6 +16,8 @@ import PageLimitDropdown from "../PageLimitDropdown/PageLimitDropdown";
 import GridItemTest from "./GridItemTest";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Link } from "react-router-dom";
+import AddTagOverlay from "../AddTagOverlay/AddTagOverlay";
+import TagDropdown from "../TagDropdown/TagDropdown";
 
 const AllItemsWithGrid = () => {
   const [addItemsOpen, setAddItemsOpen] = useState(false);
@@ -43,6 +45,8 @@ const AllItemsWithGrid = () => {
   const [totalPriceisopen, setTotalpriceisopen] = useState(false);
   const [folderoverlay, setFolderoverlay] = useState(false);
   const [folderFilter, setFolderFilter] = useState("");
+  const [tagOverlay, setTagOverlay] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -101,6 +105,12 @@ const AllItemsWithGrid = () => {
       setPage(newPage);
     }
   };
+  type tagType = {
+    _id: string;
+    email: string;
+    name: string;
+    color: string;
+  };
   type itemType = {
     _id: string;
     __v: number;
@@ -113,6 +123,7 @@ const AllItemsWithGrid = () => {
     image: { data: number[]; type: string };
     totalPrice: number;
     createdAt: string;
+    tags: tagType[];
   };
   const authAxios = axios.create({
     baseURL: baseURL,
@@ -161,6 +172,8 @@ const AllItemsWithGrid = () => {
         withNoVariants: withNoVariants,
         withVariants: withVariants,
         sortingOption: sortingOption,
+        folderFilter: folderFilter,
+        tagFilter: selectedTags,
       };
       setLoading(true);
       const response = await authAxios.post<pagenatedDataType>(
@@ -196,10 +209,19 @@ const AllItemsWithGrid = () => {
     <div className="flex flex-row content-evenly justify-start ">
       <div className="flex flex-row border-r">
         <NavigationSidebar />
-        {filterIsOpen ? (
+        <FilterSidebar
+          setPage={setPage}
+          sortingOption={sortingOption}
+          page={page}
+          itemLimit={itemLimit}
+          setLoading={setLoading}
+          setItems={setItems}
+          setTotalPages={setTotalPages}
+          setTotalItems={setTotalItems}
+        />
+        {/* {filterIsOpen ? (
           <div className="w-[284px]">
-            <div className=" bg-white h-screen">
-              {/* overflow-y-scroll */}
+            <div className=" bg-white h-screen overflow-y-scroll?">
               <h2 className="p-4 text-x1 font semibold text-3xl test-indigo-600 mb-4">
                 Filter items
               </h2>
@@ -498,6 +520,12 @@ const AllItemsWithGrid = () => {
                   <></>
                 )}
               </div>
+              <div className="">
+                <TagDropdown
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                />
+              </div>
               <div className="p-4">
                 <button
                   type="button"
@@ -536,7 +564,7 @@ const AllItemsWithGrid = () => {
               </button>
             </div>
           </>
-        )}
+        )} */}
       </div>
       <div className="flex flex-col bg-[#f6f8f9] overflow-y-scroll pt-[20px] pl-[40px] pr-[40px] w-full">
         <div className="fixed chat">
@@ -588,6 +616,16 @@ const AllItemsWithGrid = () => {
             >
               Add folder
             </button>
+            {/* <AddTagOverlay refetch={getfilteredItems} isopen={tagOverlay} />
+            <button
+              type="button"
+              onClick={() => {
+                setTagOverlay((prev) => !prev);
+              }}
+              className=" w-[200px] h-[40px] py-2 px-4 ml-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+            >
+              Add a tag
+            </button> */}
           </div>
         </div>
 
@@ -668,6 +706,7 @@ const AllItemsWithGrid = () => {
                   image,
                   createdAt,
                   totalPrice,
+                  tags,
                 } = item;
                 return (
                   <>
@@ -686,6 +725,7 @@ const AllItemsWithGrid = () => {
                       setLoading={setLoading}
                       createdAt={createdAt}
                       totalPrice={totalPrice}
+                      tags={tags}
                     />
                   </>
                 );

@@ -7,6 +7,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import AddItemOverlay from "../AddItemOverlay/AddItemOverlay";
 import UpdateItemOverley from "../UpdateItemOverlay/UpdateItemOverlay";
 import { Link } from "react-router-dom";
+import TagsForItem from "../TagDropdown/TagsForItem";
 
 const authAxios = axios.create({
   baseURL: baseURL,
@@ -14,7 +15,12 @@ const authAxios = axios.create({
     Authorization: `${localStorage.getItem("token")}`,
   },
 });
-
+type tagType = {
+  _id: string;
+  email: string;
+  name: string;
+  color: string;
+};
 type itemType = {
   id: string;
   name: string;
@@ -29,6 +35,7 @@ type itemType = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
   totalPrice: number;
+  tags: tagType[];
 };
 
 const GridItemTest = ({
@@ -45,11 +52,19 @@ const GridItemTest = ({
   setLoading,
   createdAt,
   totalPrice,
+  tags,
 }: itemType) => {
   const [deleted, setDeleted] = useState(false);
   const [update, setUpdate] = useState(false);
   const [img, setImg] = useState<string>();
   const [folders, setFolders] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
+  type tagType = {
+    _id: string;
+    email: string;
+    name: string;
+    color: string;
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -98,6 +113,19 @@ const GridItemTest = ({
     }
   }, []);
 
+  const updateTags = async () => {
+    console.log(selectedTags);
+    const authAxios = axios.create({
+      baseURL: baseURL,
+      headers: {
+        Authorization: `${localStorage.getItem("token")}`,
+      },
+    });
+    const result = await authAxios.put(`/updateItemTags/${id}`, {
+      selectedTags,
+    });
+  };
+
   return deleted ? (
     <></>
   ) : (
@@ -118,7 +146,7 @@ const GridItemTest = ({
       <div className="flex flex-col bg-white hover:shadow-md rounded-xl border-2 border-solid border-white h-[250px] mb-3 mt-2 mr-[40px]">
         <div className="w-[246px] h-[138px] oveflow-hidden relative">
           {minQuantity >= quantity ? (
-            <div className="bg-red-500 text-white rounded-lg pl-1 w-[35px] absolute bottom-2 left-2">
+            <div className="bg-red-500  text-white rounded-lg pl-1 w-[35px] absolute bottom-2 left-2">
               low
             </div>
           ) : (
@@ -156,7 +184,7 @@ const GridItemTest = ({
           </div>
         </div>
         <div className="w-[434px] h-[136px] pl-5 pr-5 pt-2 pb-2  flex flex-col flex-start w-full">
-          <div className="flex">
+          <div className="flex flex-row justify-between">
             <Menu as="div" className="relative inline-block text-left mb-2">
               <div>
                 <MenuButton className="relative inline-flex w-full justify-center gap-x-1.5 rounded-md text-sm font-semibold text-gray-900">
@@ -225,6 +253,13 @@ const GridItemTest = ({
                 </div>
               </MenuItems>
             </Menu>
+            <TagsForItem
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              updateTags={updateTags}
+              itemTags={tags}
+              itemId={id}
+            />
           </div>
         </div>
       </div>

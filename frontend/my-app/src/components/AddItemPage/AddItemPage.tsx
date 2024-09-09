@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { addItemURI, baseURL } from "../../config";
 import { Link } from "react-router-dom";
+import TagItem from "../TagDropdown/TagItem";
+import AddTagOverlay from "../AddTagOverlay/AddTagOverlay";
 
 type itemType = {
   name: string;
@@ -10,6 +12,12 @@ type itemType = {
   minQuantity: number;
   price: number;
   variants: boolean;
+};
+type tagType = {
+  _id: string;
+  email: string;
+  name: string;
+  color: string;
 };
 type refetchType = {
   refetch: () => Promise<void>;
@@ -30,7 +38,24 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
   const [price, setPrice] = useState(0);
   const [variants, setVariants] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+  const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
+  const [tags, setTags] = useState<tagType[]>([]);
+  const [tagIsOpen, setTagIsOpen] = useState(false);
+  const [tagOverlay, setTagOverlay] = useState(false);
 
+  const getTags = async () => {
+    const response = await authAxios.get("/getTags");
+    setTags(response.data);
+    console.log("tags have been set", response.data);
+  };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      await getTags();
+    };
+
+    fetchItems();
+  }, []);
   const addItem = async () => {
     const item = {
       name: name,
@@ -40,6 +65,7 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
       price: price,
       variants: variants,
       image: image,
+      tags: selectedTags,
     };
     console.log(item);
     // const response = await authAxios.post(addItemURI, item).catch((err) => {
@@ -210,6 +236,26 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
 
             <div>
               <label
+                htmlFor="custom"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                custom field &nbsp;
+                <span className="text-gray-400 font-normal">
+                  {"(opotional)"}
+                </span>
+              </label>
+              <div className="mt-2">
+                <input
+                  id="custom"
+                  name="custom"
+                  type="string"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
                 htmlFor="variants"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
@@ -225,6 +271,65 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
                   className="accent-indigo-600"
                 />
               </div>
+            </div>
+            <div className="">
+              <div className="flex flex-row">
+                <button
+                  className="flex flex-row text-sm font-medium leading-6 text-gray-900"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setTagIsOpen((prev) => !prev);
+                  }}
+                >
+                  select tags&nbsp;
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="mt-2 size-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </button>
+                <span className="text-gray-400 font-normal ml-2">
+                  {"(opotional)"}
+                </span>
+              </div>
+
+              {tagIsOpen ? (
+                <div className="mt-3">
+                  {tags.map((tag: tagType) => {
+                    return (
+                      <TagItem
+                        name={tag.name}
+                        color={tag.color}
+                        id={tag._id}
+                        email={tag.email}
+                        selectedTags={selectedTags}
+                        setSelectedTags={setSelectedTags}
+                      />
+                    );
+                  })}
+                  <AddTagOverlay refetch={getTags} isopen={tagOverlay} />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTagOverlay((prev) => !prev);
+                    }}
+                    className="py-1 px-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                  >
+                    Add a tag
+                  </button>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
 
             <div>
