@@ -28,59 +28,6 @@ config();
 app.use(express.json());
 app.use(cors());
 
-// var nodemailer = require("nodemailer");
-
-// const contact = function (req, res) {
-//   var name = req.body.name;
-//   var from = req.body.from;
-//   var message = req.body.message;
-//   var to = "bandzeladze.daviti.dato@gmail.com";
-//   var smtpTransport = nodemailer.createTransport("SMTP", {
-//     service: "Gmail",
-//     auth: {
-//       user: "XxD4V1T1xX@gmail.com",
-//       pass: "ruddy9-hiZkeq-temhyr",
-//     },
-//   });
-//   var mailOptions = {
-//     from: from,
-//     to: to,
-//     subject: name + " new message",
-//     text: message,
-//   };
-//   smtpTransport.sendMail(mailOptions, function (error, response) {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       console.log("sent");
-//       res.send("done");
-//     }
-//   });
-// };
-
-// var transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: "XxD4V1T1xX@gmail.com",
-//     pass: "ruddy9-hiZkeq-temhyr",
-//   },
-// });
-
-// var mailOptions = {
-//   from: "XxD4V1T1xX@gmail.com",
-//   to: "bandzeladze.daviti.dato@gmail.com",
-//   subject: "Sending Email using Node.js",
-//   text: "That was easy!",
-// };
-
-// transporter.sendMail(mailOptions, function (error, info) {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log("Email sent: " + info.response);
-//   }
-// });
-
 const mongo = process.env.MONGO_URI;
 const BOG_AUTH_STRING = process.env.BOG_AUTH_STRING;
 mongoose.connect(mongo);
