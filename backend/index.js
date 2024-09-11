@@ -96,6 +96,9 @@ const userSchema = new mongoose.Schema({
     enum: ["free", "premium"],
     default: "free",
   },
+  phoneNumber: { type: String, default: "" },
+  jobFunction: { type: String, default: "" },
+  companyRole: { type: String, default: "" },
 });
 const tagSchema = new mongoose.Schema({
   email: String,
@@ -139,9 +142,29 @@ const itemSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    customText: {
+      type: String,
+      default: "",
+    },
+    lowFlag: Boolean,
   },
   { timestamps: true }
 );
+
+const companySchema = new mongoose.Schema({
+  name: String,
+  industry: String,
+  color: String,
+  initials: String,
+  logo: {
+    type: Buffer,
+  },
+  country: String,
+  TimeZone: String,
+  TimeFormat: String,
+  currency: String,
+  email: String,
+});
 
 const historyItemSchema = new mongoose.Schema(
   {
@@ -179,6 +202,7 @@ const users = mongoose.model("user", userSchema);
 const history = mongoose.model("history", historyItemSchema);
 const folders = mongoose.model("folders", folderSchema);
 const tags = mongoose.model("tags", tagSchema);
+const companies = mongoose.model("companies", companySchema);
 
 app.set("views", path.join(__dirname, "views"));
 
@@ -842,6 +866,7 @@ app
     }
     try {
       const totalPrice = req.body.price * req.body.quantity;
+      const lowFlag = req.body.quantity <= req.body.minQuantity;
       const newItem = new item({
         name: req.body.name,
         quantity: req.body.quantity,
@@ -852,6 +877,8 @@ app
         userEmail: email,
         totalPrice: totalPrice,
         tags: req.body.tags,
+        lowFlag: lowFlag,
+        customText: req.body.customText,
       });
 
       const id = await getUserId(req);
@@ -1014,6 +1041,7 @@ app
   .put("/updateTest/:id", upload.single("image"), async (req, res) => {
     try {
       var result;
+      const lowflag = req.body.quantity <= req.body.minQuantity;
       if (req.file) {
         const totalPrice = req.body.price * req.body.quantity;
         result = await item.findByIdAndUpdate(
@@ -1027,6 +1055,9 @@ app
             variants: req.body.variants,
             image: req.file.buffer,
             totalPrice: totalPrice,
+            tags: req.body.tags,
+            customText: req.body.customText,
+            lowFlag: lowflag,
           }
         );
       } else {
@@ -1041,6 +1072,9 @@ app
             price: req.body.price,
             variants: req.body.variants,
             totalPrice: totalPrice,
+            tags: req.body.tags,
+            customText: req.body.customText,
+            lowFlag: lowflag,
           }
         );
       }
@@ -1251,7 +1285,7 @@ app
       lowFlag,
     } = req.body;
     if (lowFlag) {
-      filtercriteria.lowFlag = {};
+      filtercriteria.lowFlag = true;
     }
     if (name !== "") {
       filtercriteria.name = { $regex: name, $options: "i" };
@@ -1318,6 +1352,7 @@ app
           .sort(sortingOption)
           .limit(limit)
           .skip(skip);
+        console.log(filtercriteria);
         const totalItems = await item.find(filtercriteria).countDocuments();
         res.json({
           filteredItems,
@@ -1489,7 +1524,81 @@ app
     } catch (err) {
       console.log(err);
     }
-  });
+  })
+  .get("/getUserInfo", async (req, res) => {
+    try {
+      const recievedToken = JSON.parse(req.headers.authorization);
+      const decoded = await jwt.verify(
+        recievedToken.substring(7),
+        "TOP_SECRET"
+      );
+      const email = decoded.user.email;
+      const userInfo = await users.findOne({ email: email });
+      res.send(userInfo);
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .put("/changePassword", async (req, res) => {
+    try {
+      const oldpass = req.body.currentPassword;
+      const newpass = req.body.newPassword;
+      console.log("oldpass: ", oldpass, " newpass: ", newpass);
+      const recievedToken = JSON.parse(req.headers.authorization);
+      const decoded = await jwt.verify(
+        recievedToken.substring(7),
+        "TOP_SECRET"
+      );
+      const email = decoded.user.email;
+      const userInfo = await users.findOne({ email: email });
+      const passwordMatches = await bcrypt.compare(oldpass, userInfo.password);
+      if (!passwordMatches) {
+        res.status(400).send("password is incorrect");
+        return;
+      }
+
+      console.log("changing password");
+      // await users.findOneAndUpdate({ email: email }, { password: newpass });
+      res.send("changed");
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .put("/changePersonalInfo", async (req, res) => {
+    try {
+      const recievedToken = JSON.parse(req.headers.authorization);
+      const decoded = await jwt.verify(
+        recievedToken.substring(7),
+        "TOP_SECRET"
+      );
+      const email = decoded.user.email;
+      // await users.findOneAndUpdate(
+      //   { email: email },
+      //   {
+      //     firstname: req.body.firstname,
+      //     lastname: req.body.lastname,
+      //     email: req.body.email,
+      //   }
+      // );
+      res.send("updated");
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .post("/addCompanyLogo", upload.single("image"), async (req, res) => {
+    const recievedToken = JSON.parse(req.headers.authorization);
+    const decoded = await jwt.verify(recievedToken.substring(7), "TOP_SECRET");
+    const email = decoded.user.email;
+    try {
+      const response = await companies.findOneAndUpdate(
+        { email: email },
+        { logo: req.file.buffer }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .post("/addCompany", async (req, res) => {});
 
 app.listen(3001, () => {
   console.log("listening", 3001);

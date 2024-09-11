@@ -12,6 +12,9 @@ import CheckoutTest from "./CheckoutTest/CheckoutTest";
 import AllItems from "./AllItems/AllItems";
 import IndividualItemPage from "./IndividualItemPage/IndividualItemPage";
 import AllItemsWithGrid from "./GridItemTest/AllItemsWithGrid";
+import { EmailPage } from "./EmailPage/EmailPage";
+import ProfilePage from "./ProfilePage/ProfilePage";
+import CompanyDetails from "./CompanyDetails/CompanyDetails";
 
 const Router = () => {
   const { token } = useContext(globalStateContext);
@@ -96,6 +99,12 @@ const Router = () => {
               ) : (
                 <Navigate replace to={"/"} />
               )
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              checkLoggedIn() ? <ProfilePage /> : <Navigate replace to={"/"} />
             }
           />
         </Routes>

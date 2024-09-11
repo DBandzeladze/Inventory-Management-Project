@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { addItemURI, baseURL } from "../../config";
 import TagItem from "../TagDropdown/TagItem";
@@ -51,6 +51,7 @@ export default function UpdateItem({
   const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
   const [tags, setTags] = useState<tagType[]>([]);
   const [tagIsOpen, setTagIsOpen] = useState(false);
+  const [customText, setCustomText] = useState("");
 
   const updateItem = async () => {
     const item = {
@@ -61,10 +62,18 @@ export default function UpdateItem({
       price: price,
       variants: variants,
       image: image,
+      tags: selectedTags,
+      customText: customText,
     };
     console.log("updating to: ", item);
     const response = await authAxios.put(`updateTest/${id}`, item);
-    console.log("updated in the database");
+  };
+
+  const handleCustomTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    setCustomText(value);
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +123,19 @@ export default function UpdateItem({
   const getItemById = () => {
     const response = authAxios.get(`/getItemById/${id}`);
   };
+
+  const getTags = async () => {
+    const response = await authAxios.get("/getTags");
+    setTags(response.data);
+  };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      await getTags();
+    };
+
+    fetchItems();
+  }, []);
 
   return (
     <>
@@ -235,6 +257,7 @@ export default function UpdateItem({
                   id="custom"
                   name="custom"
                   type="string"
+                  onChange={handleCustomTextChange}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>

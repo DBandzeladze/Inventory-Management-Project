@@ -66,6 +66,7 @@ const FilterSidebar = ({
   const [folderFilter, setFolderFilter] = useState("");
   const [selectedTags, setSelectedTags] = useState<tagType[]>([]);
   const [lowFlag, setLowFlag] = useState(false);
+  const [lowIsOpen, setLowIsOpen] = useState(false);
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setName(value);
@@ -117,6 +118,11 @@ const FilterSidebar = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setWithNoVariants(event.target.checked);
+  };
+  const handleLowFilterChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setLowFlag(event.target.checked);
   };
   const getfilteredItems = async () => {
     type pagenatedDataType = {
@@ -387,7 +393,7 @@ const FilterSidebar = ({
                       id="HasVariants"
                       onChange={handleWithVariantsChange}
                       checked={withVariants}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 ronuded"
+                      className="h-4 w-4 accent-indigo-600 text-indigo-600 focus:ring-indigo-500 border-gray-300 ronuded"
                     />
                     <label
                       htmlFor="HasVariants"
@@ -401,7 +407,7 @@ const FilterSidebar = ({
                       id="HasNoVariants"
                       onChange={handleWithNoVariantsChange}
                       checked={withNoVariants}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 ronuded"
+                      className="h-4 w-4 accent-indigo-600 text-indigo-600 focus:ring-indigo-500 border-gray-300 ronuded"
                     />
                     <label
                       htmlFor="HasNoVariants"
@@ -473,6 +479,48 @@ const FilterSidebar = ({
                 selectedTags={selectedTags}
                 setSelectedTags={setSelectedTags}
               />
+            </div>
+            <div className="p-4 mb-4 border-b-[1px] border-gray-200">
+              <div className="flex flex-row">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="size-4 mt-1 mr-2"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <button
+                  className="block text-[#4f5366] mb-2 text-xl"
+                  onClick={() => {
+                    setLowIsOpen((prev) => !prev);
+                  }}
+                >
+                  out of stock
+                </button>
+              </div>
+              {lowIsOpen ? (
+                <>
+                  <div className="flex items-center mb2">
+                    <input
+                      type="checkbox"
+                      id="low"
+                      onChange={handleLowFilterChange}
+                      checked={lowFlag}
+                      className="h-4 w-4 accent-indigo-600 text-indigo-600 focus:ring-indigo-500 border-gray-300 ronuded"
+                    />
+                    <label htmlFor="low" className="ml-2 text-indigo-600">
+                      search only items below limit
+                    </label>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
             </div>
             <div className="p-4">
               <button

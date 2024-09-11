@@ -42,6 +42,7 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
   const [tags, setTags] = useState<tagType[]>([]);
   const [tagIsOpen, setTagIsOpen] = useState(false);
   const [tagOverlay, setTagOverlay] = useState(false);
+  const [customText, setCustomText] = useState("");
 
   const getTags = async () => {
     const response = await authAxios.get("/getTags");
@@ -66,6 +67,7 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
       variants: variants,
       image: image,
       tags: selectedTags,
+      customText: customText,
     };
     console.log(item);
     // const response = await authAxios.post(addItemURI, item).catch((err) => {
@@ -82,6 +84,13 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
       console.log(err);
     });
     const updated = await refetch();
+  };
+
+  const handleCustomTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    setCustomText(value);
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -249,6 +258,7 @@ export default function AddItemPage({ refetch, setOpen }: refetchType) {
                   id="custom"
                   name="custom"
                   type="string"
+                  onChange={handleCustomTextChange}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>

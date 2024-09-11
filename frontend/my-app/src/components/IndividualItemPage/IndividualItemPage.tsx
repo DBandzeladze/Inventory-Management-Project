@@ -137,6 +137,7 @@ const IndividualItemPage = () => {
     totalPrice: number;
     createdAt: string;
     tags: tagType[];
+    customText: string;
   };
   type tagType = {
     _id: string;
@@ -709,7 +710,7 @@ const IndividualItemPage = () => {
                   <div className="text-3xl font-semibold">Custom Fields</div>
                   <div className="flex flex-col">
                     <div className="mt-2">
-                      <div className="">Item tags:</div>
+                      <div className="text-lg font-semibold">Item tags:</div>
                       <div className="mt-1 flex flex-row">
                         {item?.tags.map((tag) => {
                           return (
@@ -723,7 +724,12 @@ const IndividualItemPage = () => {
                         })}
                       </div>
                     </div>
-                    <div className="mt-2">Custom comments</div>
+                    <div className="mt-2 text-lg font-semibold">
+                      Custom comments:{" "}
+                      <div className="text-base font-normal">
+                        {item?.customText}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
